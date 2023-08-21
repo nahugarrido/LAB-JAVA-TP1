@@ -12,4 +12,12 @@ public class ProductoEnvasado extends Producto{
     public ProductoEnvasado(String identificador, String descripcion, int cantidad, BigDecimal precioVenta, BigDecimal precioCompra, boolean estaDisponible) {
         super(identificador, descripcion, cantidad, precioVenta, precioCompra, estaDisponible);
     }
+
+    public TipoEnvase getTipoEnvase() {
+        return tipoEnvase;
+    }
+
+    public boolean isEsImportado() {
+        return esImportado;
+    }
 }
