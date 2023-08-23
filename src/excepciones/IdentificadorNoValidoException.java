@@ -1,9 +1,9 @@
 package excepciones;
 
-public class IdentificadorNoValidoExcepcion extends RuntimeException{
+public class IdentificadorNoValidoException extends RuntimeException{
     private final String identificador;
 
-    public IdentificadorNoValidoExcepcion(String identificador) {
+    public IdentificadorNoValidoException(String identificador) {
         super();
         this.identificador = identificador;
     }

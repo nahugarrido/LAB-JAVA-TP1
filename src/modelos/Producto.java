@@ -1,12 +1,10 @@
 package modelos;
 
-import excepciones.IdentificadorNoValidoExcepcion;
+import interfaces.ProductoDescontable;
 
 import java.math.BigDecimal;
 
 public abstract class Producto {
-    /* El identificador es alfanumerico de longitud 5*/
-    /* Podria usar directamente regex para restringirlo pero prefiero dejarlo asi de momento */
     private String identificador;
     private String descripcion;
     private int cantidad;
@@ -23,6 +21,9 @@ public abstract class Producto {
         this.estaDisponible = estaDisponible;
     }
 
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
 
     public String getIdentificador() {
         return identificador;

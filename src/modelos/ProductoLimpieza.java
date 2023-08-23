@@ -1,26 +1,28 @@
 package modelos;
 
 import enums.TipoAplicacion;
+import excepciones.PorcentajeDescuentoNoValidoException;
 import interfaces.ProductoDescontable;
+import utiles.GeneradorID;
 
 import java.math.BigDecimal;
 
 public class ProductoLimpieza extends Producto implements ProductoDescontable {
+    private static final double PORCENTAJE_DESCUENTO_MAXIMO = 0.25;
     private TipoAplicacion tipoAplicacion;
     private double porcentajeDescuento;
 
-    /* EL identificador de producto envasado debe ser de la forma AZXXX donde XXX son digitos */
-    public ProductoLimpieza(String identificador, String descripcion, int cantidad, BigDecimal precioVenta, BigDecimal precioCompra, boolean estaDisponible, TipoAplicacion tipoAplicacion) {
-        super(identificador, descripcion, cantidad, precioVenta, precioCompra, estaDisponible);
+    public ProductoLimpieza(String descripcion, int cantidad, BigDecimal precioVenta, BigDecimal precioCompra, boolean estaDisponible, TipoAplicacion tipoAplicacion) {
+        super(GeneradorID.generarIDLimpieza(), descripcion, cantidad, precioVenta, precioCompra, estaDisponible);
+        this.porcentajeDescuento = 0;
         this.tipoAplicacion = tipoAplicacion;
-    }
-
-    public TipoAplicacion getTipoAplicacion() {
-        return tipoAplicacion;
     }
 
     @Override
     public void setPorcentajeDescuento(double porcentaje) {
+        if(porcentaje > PORCENTAJE_DESCUENTO_MAXIMO) {
+            throw new PorcentajeDescuentoNoValidoException(PORCENTAJE_DESCUENTO_MAXIMO, porcentaje);
+        }
         this.porcentajeDescuento = porcentaje;
     }
 
@@ -31,7 +33,11 @@ public class ProductoLimpieza extends Producto implements ProductoDescontable {
 
     @Override
     public BigDecimal getPrecioVentaConDescuento() {
-        BigDecimal precioVentaConDescuento = super.getPrecioVenta().multiply(BigDecimal.valueOf(1 - this.porcentajeDescuento));
+        BigDecimal precioVentaConDescuento = this.getPrecioVenta().multiply(BigDecimal.valueOf(1 - this.porcentajeDescuento));
         return precioVentaConDescuento;
+    }
+
+    public TipoAplicacion getTipoAplicacion() {
+        return tipoAplicacion;
     }
 }
