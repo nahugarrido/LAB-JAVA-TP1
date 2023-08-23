@@ -5,7 +5,6 @@ public class StockMaximoException extends RuntimeException {
     private int stockNoValido;
 
     public StockMaximoException(int stockMax, int stockNoValido) {
-        super();
         this.stockMax = stockMax;
         this.stockNoValido = stockNoValido;
     }

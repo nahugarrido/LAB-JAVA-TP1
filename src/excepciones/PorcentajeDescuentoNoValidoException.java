@@ -5,7 +5,6 @@ public class PorcentajeDescuentoNoValidoException extends RuntimeException {
     private double porcentajeNoValido;
 
     public PorcentajeDescuentoNoValidoException(double porcentajeMaximo, double porcentajeNoValido) {
-        super();
         this.porcentajeMaximo = porcentajeMaximo;
         this.porcentajeNoValido = porcentajeNoValido;
     }

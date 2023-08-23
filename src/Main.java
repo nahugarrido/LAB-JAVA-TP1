@@ -23,7 +23,9 @@ public class Main {
 
             switch (opcion) {
                 case "1":
-                    Producto productoLimpieza1 = new ProductoLimpieza("Muy buen desengrasante", 100, BigDecimal.valueOf(100), BigDecimal.valueOf(50), true, TipoAplicacion.COCINA);
+                    Producto productoLimpieza1 = new ProductoLimpieza("Detergente Ala", 100, BigDecimal.valueOf(100), BigDecimal.valueOf(50), true, TipoAplicacion.COCINA);
+                    Producto productoLimpieza2 = new ProductoLimpieza("Desengrasante Vick", 50, BigDecimal.valueOf(80), BigDecimal.valueOf(100), true, TipoAplicacion.COCINA);
+
                     tienda.agregarProducto(productoLimpieza1);
                     System.out.println("Productos agregado con exito.");
                     break;

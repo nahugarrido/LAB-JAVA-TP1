@@ -6,7 +6,6 @@ public class TipoProductoNoContempladoException extends RuntimeException {
     private String tipoProducto;
 
     public TipoProductoNoContempladoException(String tipoProducto) {
-        super();
         this.tipoProducto = tipoProducto;
     }
 

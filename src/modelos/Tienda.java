@@ -1,6 +1,7 @@
 package modelos;
 
 import enums.TipoProducto;
+import excepciones.SaldoInsuficienteCajaException;
 import excepciones.StockMaximoException;
 import excepciones.TipoProductoNoContempladoException;
 
@@ -10,27 +11,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/* Utilizo un String y no un Enum como key para que en el caso de que se agreguen nuevos tipos de productos,
+ estos puedan ser agregados a la lista sin necesidad de modificar el enum y la implementacion de los metodos de la tienda */
+
 public class Tienda {
     private String nombre;
     private int maxStock;
-    private BigDecimal saldo;
-    /* Utilizo un String y no un Enum como key para que en el caso de que se agreguen nuevos tipos de productos,
-     estos puedan ser agregados a la lista sin necesidad de modificar el enum y la implementacion de los metodos de la tienda */
+    private BigDecimal saldoCaja;
     private Map<String, List<Producto>> productos;
 
-    public Tienda(String nombre, int maxStock, BigDecimal saldo) {
+    public Tienda(String nombre, int maxStock, BigDecimal saldoCaja) {
         this.nombre = nombre;
         this.maxStock = maxStock;
-        this.saldo = saldo;
+        this.saldoCaja = saldoCaja;
         this.productos = new HashMap<>();
     }
 
     public void agregarProducto(Producto producto) {
-        /// Verificacion stock maximo de tienda
-        if(this.maxStock <  this.maxStock + producto.getCantidad()) {
-            throw new StockMaximoException(this.getMaxStock(), this.maxStock + producto.getCantidad());
-        }
-
         /// Obtener key basandome en el nombre de la clase
         String tipoProducto = producto.getClass().getSimpleName();
 
@@ -39,7 +36,23 @@ public class Tienda {
             productos.put(tipoProducto, new ArrayList<>());
         }
 
-        /// Agregar producto
+        /// Verificacion stock maximo de tienda
+        if(this.maxStock <  this.maxStock + producto.getCantidad()) {
+            throw new StockMaximoException(this.getMaxStock(), this.maxStock + producto.getCantidad());
+        }
+
+        /// Verificar saldo suficiente en tienda
+        BigDecimal montoCompra = producto.getPrecioCompra().multiply(BigDecimal.valueOf(producto.getCantidad()));
+
+        if(this.getSaldo().compareTo(montoCompra) < 0) {
+            throw new SaldoInsuficienteCajaException(this.getSaldo(), montoCompra);
+        }
+
+        /// Actualizar Stock
+        this.setMaxStock(this.getMaxStock() + producto.getCantidad());
+        /// Actualizar Saldo
+        this.setSaldoCaja(this.getSaldo().subtract(montoCompra));
+        /// Agregar el producto a la tienda
         List<Producto> listaProducto = productos.get(tipoProducto);
         listaProducto.add(producto);
         productos.put(tipoProducto, listaProducto);
@@ -58,6 +71,14 @@ public class Tienda {
         }
     }
 
+    private void setMaxStock(int maxStock) {
+        this.maxStock = maxStock;
+    }
+
+    private void setSaldoCaja(BigDecimal saldoCaja) {
+        this.saldoCaja = saldoCaja;
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -67,6 +88,6 @@ public class Tienda {
     }
 
     public BigDecimal getSaldo() {
-        return saldo;
+        return saldoCaja;
     }
 }

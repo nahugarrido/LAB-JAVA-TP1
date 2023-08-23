@@ -38,15 +38,6 @@ public class ProductoBebida extends Producto implements ProductoDescontable, Pro
         }
     }
 
-    public class Builder {
-        private boolean esImportado;
-        private double graduacionAlcoholica;
-        private boolean esAlcoholica;
-        private double porcentajeDescuento = 0.0;
-        private LocalDate fechaVencimiento;
-        private int calorias;
-    }
-
     @Override
     public void setPorcentajeDescuento(double porcentaje) {
         if(porcentaje > PORCENTAJE_DESCUENTO_MAXIMO) {
