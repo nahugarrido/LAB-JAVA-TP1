@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class ProductoEnvasado extends Producto implements ProductoDescontable, ProductoComestible {
-    private static final double PORCENTAJE_DESCUENTO_MAXIMO = 0.20;
     private TipoEnvase tipoEnvase;
     private boolean esImportado;
     private double porcentajeDescuento;
@@ -38,9 +37,6 @@ public class ProductoEnvasado extends Producto implements ProductoDescontable, P
 
     @Override
     public void setPorcentajeDescuento(double porcentaje) {
-        if(porcentaje > PORCENTAJE_DESCUENTO_MAXIMO) {
-            throw new PorcentajeDescuentoNoValidoException(PORCENTAJE_DESCUENTO_MAXIMO, porcentaje);
-        }
         this.porcentajeDescuento = porcentaje;
     }
 

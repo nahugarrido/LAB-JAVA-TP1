@@ -1,17 +1,25 @@
 package modelos;
 
 import enums.TipoProducto;
+import excepciones.PorcentajeDescuentoNoValidoException;
 import excepciones.SaldoInsuficienteCajaException;
 import excepciones.StockMaximoException;
 import excepciones.TipoProductoNoContempladoException;
+import interfaces.ProductoComestible;
+import interfaces.ProductoDescontable;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 
-/* Utilizo un String y no un Enum como key para que en el caso de que se agreguen nuevos tipos de productos,
- estos puedan ser agregados a la lista sin necesidad de modificar el enum y la implementacion de los metodos de la tienda */
-
 public class Tienda {
+    private static final double PORCENTAJE_GANANCIA_COMESTIBLE = 0.20;
+    private static final double PORCENTAJE_MIN_GANANCIA_LIMPIEZA = 0.10;
+    private static final double PORCENTAJE_MAX_GANANCIA_LIMPIEZA = 0.25;
+    private static final double PORCENTAJE_MAX_DESCUENTO_BEBIDAS = 0.15;
+    private static final double PORCENTAJE_MAX_DESCUENTO_ENVASADOS = 0.20;
+    private static final double PORCENTAJE_MAX_DESCUENTO_LIMPIEZA = 0.25;
+
     private String nombre;
     private int maxStock;
     private BigDecimal saldoCaja;
@@ -55,6 +63,56 @@ public class Tienda {
         productos.put(producto.getIdentificador(), producto);
     }
 
+    public void establecerFechaVencimientoProducto(String identificador, LocalDate date) {
+       ProductoComestible producto = (ProductoComestible) productos.get(identificador);
+       producto.setFechaVencimiento(date);
+       productos.put(identificador, (Producto) producto);
+    }
+
+    public void establecerCaloriasProducto(String identificador, int calorias) {
+        ProductoComestible productoComestible = (ProductoComestible) productos.get(identificador);
+        productoComestible.setCalorias(calorias);
+        productos.put(identificador, (Producto) productoComestible);
+    }
+
+    public void establecerDescuentoProducto(String identificador, double porcentajeDescuento) {
+
+        /// Obtener el producto a actualizar
+        ProductoDescontable productoDescontable = (ProductoDescontable) productos.get(identificador);
+
+        System.out.println(productoDescontable);
+
+        /// Actualizar el descuento del producto
+        if(productoDescontable instanceof ProductoBebida) {
+            productoDescontable = actualizarDescuento(productoDescontable, porcentajeDescuento, PORCENTAJE_MAX_DESCUENTO_BEBIDAS);
+        } else if(productoDescontable instanceof ProductoLimpieza) {
+            productoDescontable = actualizarDescuento(productoDescontable, porcentajeDescuento, PORCENTAJE_MAX_DESCUENTO_LIMPIEZA);
+
+        } else if(productoDescontable instanceof ProductoEnvasado) {
+            productoDescontable = actualizarDescuento(productoDescontable, porcentajeDescuento, PORCENTAJE_MAX_DESCUENTO_ENVASADOS);
+        } else {
+            throw new TipoProductoNoContempladoException(productoDescontable.getClass().getSimpleName());
+        }
+
+        System.out.println("TEST");
+        /// Persistir el producto
+        productos.put(identificador, (Producto) productoDescontable);
+    }
+
+    /* Funcion auxiliar para evitar bloque de codigo repetido */
+    private ProductoDescontable actualizarDescuento(ProductoDescontable productoDescontable, double porcentajeDescuento, double porcentajeMaximoDescuento) {
+        if(porcentajeDescuento <= porcentajeMaximoDescuento) {
+            productoDescontable.setPorcentajeDescuento(porcentajeDescuento);
+            return productoDescontable;
+        } else {
+            throw new PorcentajeDescuentoNoValidoException(porcentajeMaximoDescuento,porcentajeDescuento);
+        }
+    }
+
+    public void realizarVenta(List<Producto> productosSolicitados) {
+
+    }
+
     public String mostrarProductos() {
         StringBuilder texto = new StringBuilder();
 
@@ -78,18 +136,6 @@ public class Tienda {
         }
 
         return contador;
-    }
-
-    private TipoProducto obtenerTipoProducto(Producto producto) {
-        if(producto instanceof ProductoBebida) {
-            return TipoProducto.BEBIDA;
-        } else if(producto instanceof ProductoEnvasado) {
-            return TipoProducto.ENVASADO;
-        } else if(producto instanceof ProductoLimpieza) {
-            return TipoProducto.LIMPIEZA;
-        } else {
-            throw new TipoProductoNoContempladoException(producto.getClass().getSimpleName());
-        }
     }
 
     private void setMaxStock(int maxStock) {

@@ -8,7 +8,6 @@ import utiles.GeneradorID;
 import java.math.BigDecimal;
 
 public class ProductoLimpieza extends Producto implements ProductoDescontable {
-    private static final double PORCENTAJE_DESCUENTO_MAXIMO = 0.25;
     private TipoAplicacion tipoAplicacion;
     private double porcentajeDescuento;
 
@@ -27,9 +26,6 @@ public class ProductoLimpieza extends Producto implements ProductoDescontable {
 
     @Override
     public void setPorcentajeDescuento(double porcentaje) {
-        if(porcentaje > PORCENTAJE_DESCUENTO_MAXIMO) {
-            throw new PorcentajeDescuentoNoValidoException(PORCENTAJE_DESCUENTO_MAXIMO, porcentaje);
-        }
         this.porcentajeDescuento = porcentaje;
     }
 

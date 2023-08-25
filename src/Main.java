@@ -4,6 +4,7 @@ import excepciones.SaldoInsuficienteCajaException;
 import modelos.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 public class Main {
@@ -22,19 +23,16 @@ public class Main {
             System.out.println("Opción 3 - Agregar Productos (La tienda no cuenta con productos inicialmente)");
             System.out.println("Opción 4 - Agregar Productos (Exceder saldo de la tienda)");
             System.out.println("Opción 5 - Agregar Productos (Exceder stock maximo de la tienda)");
-            System.out.println("Opción 6 - Agregar Productos (No cumple con condicion precio de venta - Productos Comestibles) *** PENDIENTE ***");
-            System.out.println("Opción 7 - Agregar Productos (No cumple con condicion precio de venta - Productos de Limpieza (1)) *** PENDIENTE ***");
-            System.out.println("Opción 8 - Agregar Productos (No cumple con condicion precio de venta - Productos de Limpieza (2)) *** PENDIENTE ***");
-            System.out.println("Opción 9 - Añadir fechas de caducidad y calorias (Inicialmente se les asignan valores por defecto null y 0) *** PENDIENTE ***");
-            System.out.println("Opción 10 - Añadir descuentos a productos *** PENDIENTE ***");
-            System.out.println("Opción 11 - Añadir descuentos a productos (no cumple con condicion BEBIDAS) *** PENDIENTE ***");
-            System.out.println("Opción 12 - Añadir descuentos a productos (no cumple con condicion ENVASADOS) *** PENDIENTE ***");
-            System.out.println("Opción 13 - Añadir descuentos a productos (no cumple con condicion LIMPIEZA) *** PENDIENTE ***");
-            System.out.println("Opción 14 - Añadir descuentos a productos (no cumple con condicion GENERA PERDIDAS) *** PENDIENTE ***");
-            System.out.println("Opción 15 - Realizar venta exitosamente *** PENDIENTE ***");
-            System.out.println("Opción 16 - Realizar venta con casos especiales *** PENDIENTE ***");
-            System.out.println("Opción 17 - Obtener comestibles con descuento menor a 10% con API STREAMS *** PENDIENTE ***");
-            System.out.println("Opción 18 - Obtener productos generando ganancias menores a 10%  con API STREAMS *** PENDIENTE ***");
+            System.out.println("Opción 6 - Añadir fechas de caducidad y calorias (Inicialmente se les asignan valores por defecto null y 0)");
+            System.out.println("Opción 7 - Actualizar descuentos de productos (Inicialmente el descuento de todos los productos es 0)");
+            System.out.println("Opción 8 - Actualizar descuentos de productos (No cumple con condición descuento maximo)");
+            System.out.println("Opción X - Agregar Productos (No cumple con condicion precio de venta - Productos Comestibles) *** PENDIENTE ***");
+            System.out.println("Opción X - Agregar Productos (No cumple con condicion precio de venta - Productos de Limpieza (1)) *** PENDIENTE ***");
+            System.out.println("Opción X - Agregar Productos (No cumple con condicion precio de venta - Productos de Limpieza (2)) *** PENDIENTE ***");
+            System.out.println("Opción X - Realizar venta exitosamente *** PENDIENTE ***");
+            System.out.println("Opción X - Realizar venta con casos especiales *** PENDIENTE ***");
+            System.out.println("Opción X - Obtener comestibles con descuento menor a 10% con API STREAMS *** PENDIENTE ***");
+            System.out.println("Opción X - Obtener productos generando ganancias menores a 10%  con API STREAMS *** PENDIENTE ***");
 
             System.out.println("Opción X - Salir");
             System.out.println("******************************************************");
@@ -72,6 +70,27 @@ public class Main {
                     case "5":
                         Producto productoEnvasado2 = new ProductoEnvasado("Caramelo", 1001, BigDecimal.valueOf(1), BigDecimal.valueOf(10), true, TipoEnvase.PLASTICO, false);
                         tienda.agregarProducto(productoEnvasado2);
+                        break;
+                    case "6":
+                        tienda.establecerFechaVencimientoProducto("AB101",LocalDate.of(2024,6,27));
+                        tienda.establecerCaloriasProducto("AB101", 60);
+                        tienda.establecerFechaVencimientoProducto("AC101",LocalDate.of(2024,2,2));
+                        tienda.establecerCaloriasProducto("AC101", 120);
+                        tienda.establecerFechaVencimientoProducto("AC102",LocalDate.of(2021,1,1)); /// VENCIDO
+                        tienda.establecerCaloriasProducto("AC102", 160);
+                        System.out.println("Fechas de vencimiento y calorias actualizadas con exito.");
+                        break;
+                    case "7":
+                        tienda.establecerDescuentoProducto("AB101", 0.1);
+                        tienda.establecerDescuentoProducto("AC101", 0.1);
+                        tienda.establecerDescuentoProducto("AC102", 0.1);
+                        tienda.establecerDescuentoProducto("AZ101", 0.1);
+                        tienda.establecerDescuentoProducto("AZ102", 0.1);
+                        tienda.establecerDescuentoProducto("AZ103", 0.1);
+                        System.out.println("Descuentos actualizados con exito.");
+                        break;
+                    case "8":
+                        tienda.establecerDescuentoProducto("AB101", 0.5);
                         break;
                     default:
                         System.out.println("Debes seleccionar una opcion valida.");
