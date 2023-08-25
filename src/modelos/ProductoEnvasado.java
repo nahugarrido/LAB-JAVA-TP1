@@ -17,9 +17,23 @@ public class ProductoEnvasado extends Producto implements ProductoDescontable, P
     private LocalDate fechaVencimiento;
     private int calorias;
 
-    public ProductoEnvasado(String descripcion, int cantidad, BigDecimal precioVenta, BigDecimal precioCompra, boolean estaDisponible) {
-        super(GeneradorID.generarIDEnvasado(), descripcion, cantidad, precioVenta, precioCompra, estaDisponible);
+    public ProductoEnvasado(String descripcion, int cantidad, BigDecimal precioCompra, BigDecimal precioVenta, boolean estaDisponible, TipoEnvase tipoEnvase, boolean esImportado) {
+        super(GeneradorID.generarIDEnvasado(), descripcion, cantidad, precioCompra, precioVenta, estaDisponible);
+        this.esImportado = esImportado;
+        this.tipoEnvase = tipoEnvase;
         this.porcentajeDescuento = 0;
+        this.fechaVencimiento = null;
+        this.calorias = 0;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                " * ¿Es Importado?: " + esImportado +
+                " * Tipo de envase: " + tipoEnvase.getMensaje() +
+                " * Porcentaje de descuento: " + porcentajeDescuento + "%" +
+                " * Calorias: " + calorias +
+                " * Fecha de vencimiento: " + fechaVencimiento + "\n";
     }
 
     @Override

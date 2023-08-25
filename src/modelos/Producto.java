@@ -8,17 +8,27 @@ public abstract class Producto {
     private String identificador;
     private String descripcion;
     private int cantidad;
-    private BigDecimal precioVenta;
     private BigDecimal precioCompra;
+    private BigDecimal precioVenta;
     private boolean estaDisponible;
 
-    public Producto(String identificador, String descripcion, int cantidad, BigDecimal precioVenta, BigDecimal precioCompra, boolean estaDisponible) {
+    public Producto(String identificador, String descripcion, int cantidad, BigDecimal precioCompra, BigDecimal precioVenta, boolean estaDisponible) {
         this.identificador = identificador;
         this.descripcion = descripcion;
         this.cantidad = cantidad;
-        this.precioVenta = precioVenta;
         this.precioCompra = precioCompra;
+        this.precioVenta = precioVenta;
         this.estaDisponible = estaDisponible;
+    }
+
+    @Override
+    public String toString() {
+        return "Identificador: " + identificador +
+                " * Descripcion: " + descripcion +
+                " * Cantidad disponible: " + cantidad +
+                " * Valor de compra: " + precioCompra +
+                " * Valor de venta:" + precioVenta +
+                " * ¿Está Disponible?: " + estaDisponible;
     }
 
     public void setCantidad(int cantidad) {

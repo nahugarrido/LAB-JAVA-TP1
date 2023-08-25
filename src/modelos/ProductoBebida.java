@@ -18,12 +18,14 @@ public class ProductoBebida extends Producto implements ProductoDescontable, Pro
     private int calorias;
 
     /* Constructor auxiliar para bebidas no alcoholicas (no recibe "graduacionAlcoholica" por parametro) */
-    public ProductoBebida(String descripcion, int cantidad, BigDecimal precioVenta, BigDecimal precioCompra, boolean estaDisponible, boolean esImportado, boolean esAlcoholica) {
-        super(GeneradorID.generarIDBebida(), descripcion, cantidad, precioVenta, precioCompra, estaDisponible);
+    public ProductoBebida(String descripcion, int cantidad, BigDecimal precioCompra, BigDecimal precioVenta, boolean estaDisponible, boolean esImportado, boolean esAlcoholica) {
+        super(GeneradorID.generarIDBebida(), descripcion, cantidad, precioCompra, precioVenta, estaDisponible);
         this.esImportado = esImportado;
         this.esAlcoholica = esAlcoholica;
-        this.porcentajeDescuento = 0;
         this.graduacionAlcoholica = 0;
+        this.porcentajeDescuento = 0;
+        this.fechaVencimiento = null;
+        this.calorias = 0;
     }
 
     public ProductoBebida(String descripcion, int cantidad, BigDecimal precioVenta, BigDecimal precioCompra, boolean estaDisponible, boolean esImportado, boolean esAlcoholica, double graduacionAlcoholica) {
@@ -31,11 +33,25 @@ public class ProductoBebida extends Producto implements ProductoDescontable, Pro
         this.esImportado = esImportado;
         this.esAlcoholica = esAlcoholica;
         this.porcentajeDescuento = 0;
+        this.fechaVencimiento = null;
+        this.calorias = 0;
+
         if(esAlcoholica) {
             this.graduacionAlcoholica = graduacionAlcoholica;
         } else {
             this.graduacionAlcoholica = 0;
         }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                " * ¿Es Importada?: " + esImportado +
+                " * ¿Es Alcohólica?: " + esAlcoholica +
+                " * Graduacion: " + graduacionAlcoholica + "%" +
+                " * Porcentaje de descuento: " + porcentajeDescuento + "%" +
+                " * Calorias: " + calorias +
+                " * Fecha de vencimiento: " + fechaVencimiento + "\n";
     }
 
     @Override

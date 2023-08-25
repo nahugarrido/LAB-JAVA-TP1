@@ -12,10 +12,17 @@ public class ProductoLimpieza extends Producto implements ProductoDescontable {
     private TipoAplicacion tipoAplicacion;
     private double porcentajeDescuento;
 
-    public ProductoLimpieza(String descripcion, int cantidad, BigDecimal precioVenta, BigDecimal precioCompra, boolean estaDisponible, TipoAplicacion tipoAplicacion) {
-        super(GeneradorID.generarIDLimpieza(), descripcion, cantidad, precioVenta, precioCompra, estaDisponible);
-        this.porcentajeDescuento = 0;
+    public ProductoLimpieza(String descripcion, int cantidad, BigDecimal precioCompra, BigDecimal precioVenta, boolean estaDisponible, TipoAplicacion tipoAplicacion) {
+        super(GeneradorID.generarIDLimpieza(), descripcion, cantidad, precioCompra, precioVenta, estaDisponible);
         this.tipoAplicacion = tipoAplicacion;
+        this.porcentajeDescuento = 0;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                " * Tipo de aplicacion: " + tipoAplicacion.toString() +
+                " * Porcentaje de descuento: " + porcentajeDescuento + "%" + "\n";
     }
 
     @Override
