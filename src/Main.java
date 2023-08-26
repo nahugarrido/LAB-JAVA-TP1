@@ -1,3 +1,4 @@
+import dto.SolicitudVenta;
 import enums.TipoAplicacion;
 import enums.TipoEnvase;
 import excepciones.SaldoInsuficienteCajaException;
@@ -5,6 +6,8 @@ import modelos.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -13,6 +16,8 @@ public class Main {
         Scanner scan = new Scanner(System.in);
         boolean flag = true;
         String opcion = "";
+        
+        System.out.println("ACLARACION IMPORTANTE: El orden para testear las ventas es (3,6,7,9) y (3,6,7,10)");
 
         do {
             System.out.println("******************************************************");
@@ -26,8 +31,8 @@ public class Main {
             System.out.println("Opción 6 - Añadir fechas de caducidad y calorias (Inicialmente se les asignan valores por defecto null y 0)");
             System.out.println("Opción 7 - Actualizar descuentos de productos (Inicialmente el descuento de todos los productos es 0)");
             System.out.println("Opción 8 - Actualizar descuentos de productos (No cumple con condición descuento maximo)");
-            System.out.println("Opción X - Realizar venta exitosamente *** PENDIENTE ***");
-            System.out.println("Opción X - Realizar venta con casos especiales *** PENDIENTE ***");
+            System.out.println("Opción 9 - Realizar venta exitosamente");
+            System.out.println("Opción 10 - Realizar venta (ganancia maxima superada)");
             System.out.println("Opción X - Obtener comestibles con descuento menor a 10% con API STREAMS *** PENDIENTE ***");
             System.out.println("Opción X - Obtener productos generando ganancias menores a 10%  con API STREAMS *** PENDIENTE ***");
 
@@ -48,13 +53,15 @@ public class Main {
                     case "3":
                         Producto productoLimpieza1 = new ProductoLimpieza("Detergente Ala", 100, BigDecimal.valueOf(100), BigDecimal.valueOf(50), true, TipoAplicacion.COCINA);
                         Producto productoLimpieza2 = new ProductoLimpieza("Desengrasante Vick", 50, BigDecimal.valueOf(80), BigDecimal.valueOf(100), true, TipoAplicacion.COCINA);
-                        Producto productoLimpieza3 = new ProductoLimpieza("Cera para pisos", 50, BigDecimal.valueOf(60), BigDecimal.valueOf(90), true, TipoAplicacion.PISOS);
-                        Producto productoBebida1 = new ProductoBebida("Gaseosa Coca Cola", 50, BigDecimal.valueOf(30), BigDecimal.valueOf(40), true, false, false);
-                        Producto productoBebida2 = new ProductoBebida("Whisky Blue Label", 10, BigDecimal.valueOf(2500), BigDecimal.valueOf(3000), true, false, true,0.32);
+                        Producto productoLimpieza3 = new ProductoLimpieza("Cera para pisos", 50, BigDecimal.valueOf(60), BigDecimal.valueOf(90), false, TipoAplicacion.PISOS);
+                        Producto productoLimpieza4 = new ProductoLimpieza("Jabon", 2, BigDecimal.valueOf(10), BigDecimal.valueOf(11), true, TipoAplicacion.ROPA);
+                        Producto productoBebida1 = new ProductoBebida("Gaseosa Coca Cola", 50, BigDecimal.valueOf(30), BigDecimal.valueOf(40), true, true, false);
+                        Producto productoBebida2 = new ProductoBebida("Whisky Blue Label", 10, BigDecimal.valueOf(2500), BigDecimal.valueOf(6000), true, false, true,0.32);
                         Producto productoEnvasado1 = new ProductoEnvasado("Queso La Vaca Feliz", 50, BigDecimal.valueOf(30), BigDecimal.valueOf(40), true, TipoEnvase.PLASTICO, false);
                         tienda.agregarProducto(productoLimpieza1);
                         tienda.agregarProducto(productoLimpieza2);
                         tienda.agregarProducto(productoLimpieza3);
+                        tienda.agregarProducto(productoLimpieza4);
                         tienda.agregarProducto(productoBebida1);
                         tienda.agregarProducto(productoBebida2);
                         tienda.agregarProducto(productoEnvasado1);
@@ -73,14 +80,14 @@ public class Main {
                         tienda.establecerCaloriasProducto("AB101", 60);
                         tienda.establecerFechaVencimientoProducto("AC101",LocalDate.of(2024,2,2));
                         tienda.establecerCaloriasProducto("AC101", 120);
-                        tienda.establecerFechaVencimientoProducto("AC102",LocalDate.of(2021,1,1)); /// VENCIDO
+                        tienda.establecerFechaVencimientoProducto("AC102",LocalDate.of(2024,1,1));
                         tienda.establecerCaloriasProducto("AC102", 160);
                         System.out.println("Fechas de vencimiento y calorias actualizadas con exito.");
                         break;
                     case "7":
                         tienda.establecerDescuentoProducto("AB101", 0.05);
-                        tienda.establecerDescuentoProducto("AC101", 0.1);
-                        tienda.establecerDescuentoProducto("AC102", 0.15);
+                        tienda.establecerDescuentoProducto("AC101", 0.10);
+                        tienda.establecerDescuentoProducto("AC102", 0.10);
                         tienda.establecerDescuentoProducto("AZ101", 0.20);
                         tienda.establecerDescuentoProducto("AZ102", 0.21);
                         tienda.establecerDescuentoProducto("AZ103", 0.22);
@@ -88,6 +95,26 @@ public class Main {
                         break;
                     case "8":
                         tienda.establecerDescuentoProducto("AB101", 0.5);
+                        break;
+                    case "9":
+                        List<SolicitudVenta> solicitud1 = new ArrayList<>();
+                        SolicitudVenta item1 = new SolicitudVenta("AZ103", 5); /// item no disponible para la venta
+                        SolicitudVenta item2 = new SolicitudVenta("AZ104", 5); /// items en stock (2)
+                        SolicitudVenta item3 = new SolicitudVenta("AC101", 8); /// producto importado
+                        solicitud1.add(item1);
+                        solicitud1.add(item2);
+                        solicitud1.add(item3);
+                        tienda.realizarVenta(solicitud1);
+                        break;
+                    case "10":
+                        List<SolicitudVenta> solicitud2 = new ArrayList<>();
+                        SolicitudVenta item4 = new SolicitudVenta("AC102", 1); /// porcentaje de ganancia no valido
+                        solicitud2.add(item4);
+                        tienda.realizarVenta(solicitud2);
+                        break;
+
+                    case "X":
+                        flag = false;
                         break;
                     default:
                         System.out.println("Debes seleccionar una opcion valida.");

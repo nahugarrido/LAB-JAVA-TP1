@@ -21,14 +21,12 @@ public class Tienda {
     private String nombre;
     private int maxStock;
     private BigDecimal saldoCaja;
-    private List<Venta> ventas;
     private TreeMap<String, Producto> productos;
 
     public Tienda(String nombre, int maxStock, BigDecimal saldoCaja) {
         this.nombre = nombre;
         this.maxStock = maxStock;
         this.saldoCaja = saldoCaja;
-        this.ventas = new ArrayList<>();
         this.productos = new TreeMap<>();
     }
 
@@ -165,12 +163,16 @@ public class Tienda {
             montoSubTotalVenta = montoSubTotalVenta.add(subTotalItem);
         }
 
+        /// Generar venta
+        montoAbonadoTotal = montoSubTotalVenta.add(impuestosVenta);
+        Venta ventaNueva = new Venta(productosSolicitados, montoTotalVenta, montoSubTotalVenta, impuestosVenta, montoAbonadoTotal);
+        System.out.println(ventaNueva.mostrarVenta());
+
         /// modificar stock de productos en tienda
         for(Producto productoSolicitado : productosSolicitados) {
             String identificador = productoSolicitado.getIdentificador();
 
             Producto aux = productos.get(identificador);
-
             aux.setCantidad( aux.getCantidad() - productoSolicitado.getCantidad());
 
             if(aux.getCantidad() <= 0) {
@@ -182,45 +184,23 @@ public class Tienda {
 
         /// actualizar saldo de tienda
         this.setSaldoCaja(this.getSaldo().add(montoSubTotalVenta));
-
-        /// Generar venta
-        montoAbonadoTotal = montoSubTotalVenta.add(impuestosVenta);
-        Venta ventaNueva = new Venta(productosSolicitados, montoTotalVenta, montoSubTotalVenta, impuestosVenta, montoAbonadoTotal);
-
-        /// Agregar venta a la tienda
-        ventas.add(ventaNueva);
-
-        /// imprimir venta
-        System.out.println(ventaNueva.mostrarVenta());
-
     }
-
-    public String mostrarVentas() {
-        String texto = "";
-        for(Venta item : ventas) {
-            texto += item.mostrarVenta();
-        }
-
-        return texto;
-    }
-
-
 
     private void verificarPorcentajeGanancias(List<Producto> productosSolicitados) {
         for(Producto item : productosSolicitados) {
             double porcentajeGanancia = calcularPorcentajeGanancia(item);
 
             if(item instanceof ProductoComestible) {
-                if(porcentajeGanancia > 0.20) {
+                if(porcentajeGanancia > 20) {
                     throw new RuntimeException("Porcentaje de ganancia no valido");
                 }
             } else if(item instanceof ProductoLimpieza) {
                 if((((ProductoLimpieza) item).getTipoAplicacion() == TipoAplicacion.ROPA) || (((ProductoLimpieza) item).getTipoAplicacion() == TipoAplicacion.MULTIUSO)) {
-                    if(porcentajeGanancia > 0.25) {
+                    if(porcentajeGanancia > 25) {
                         throw new RuntimeException("Porcentaje de ganancia no valido");
                     }
                 } else {
-                    if(porcentajeGanancia > 0.25 || porcentajeGanancia < 0.10) {
+                    if(porcentajeGanancia > 25 || porcentajeGanancia < 10) {
                         throw new RuntimeException("Porcentaje de ganancia no valido");
                     }
                 }

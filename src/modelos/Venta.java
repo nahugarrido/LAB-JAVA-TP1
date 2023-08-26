@@ -40,18 +40,18 @@ public class Venta {
 
     public String mostrarVenta() {
         StringBuilder texto = new StringBuilder();
-        texto.append("****************** VENTA ******************");
+        texto.append("****************** VENTA ****************** \n");
         texto.append("SUBTOTAL SIN DESCUENTOS: " + this.getMontoTotalVenta() + "\n");
         texto.append("SUBTOTAL APLICANDO DESCUENTOS: " + this.getMontoSubTotalVenta() + "\n");
         texto.append("IMPUESTOS: " + this.getImpuestosVenta() + "\n");
         texto.append("MONTO TOTAL ABONADO: " + this.getMontoAbonadoTotal() + "\n");
-        texto.append("****************** ITEMS ******************");
+        texto.append("****************** ITEMS ****************** \n");
         for(Producto item : productos) {
             texto.append(item.getIdentificador() + " " + item.getDescripcion() + " ");
             texto.append(item.getCantidad() + " x " + item.getPrecioVenta() + "\n");
         }
 
-        texto.append("******************************************");
+        texto.append("****************************************** \n");
 
         return texto.toString();
     }
