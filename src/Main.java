@@ -19,7 +19,7 @@ public class Main {
 
         System.out.println("ACLARACION IMPORTANTE: El orden para testear las ventas es (3,6,7,9) y (3,6,7,10)");
         System.out.println("ACLARACION IMPORTANTE: El orden para testear el punto 11 es (3,7,11)");
-        
+
         do {
             System.out.println("******************************************************");
             System.out.println("Navegación - " + tienda.getNombre());
