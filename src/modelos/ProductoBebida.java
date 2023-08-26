@@ -1,6 +1,5 @@
 package modelos;
 
-import excepciones.PorcentajeDescuentoNoValidoException;
 import interfaces.ProductoComestible;
 import interfaces.ProductoDescontable;
 import utiles.GeneradorID;
@@ -8,11 +7,10 @@ import utiles.GeneradorID;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class ProductoBebida extends Producto implements ProductoDescontable, ProductoComestible {
+public class ProductoBebida extends Producto implements ProductoComestible {
     private boolean esImportado;
     private double graduacionAlcoholica;
     private boolean esAlcoholica;
-    private double porcentajeDescuento;
     private LocalDate fechaVencimiento;
     private int calorias;
 
@@ -22,7 +20,6 @@ public class ProductoBebida extends Producto implements ProductoDescontable, Pro
         this.esImportado = esImportado;
         this.esAlcoholica = esAlcoholica;
         this.graduacionAlcoholica = 0;
-        this.porcentajeDescuento = 0;
         this.fechaVencimiento = null;
         this.calorias = 0;
     }
@@ -31,7 +28,6 @@ public class ProductoBebida extends Producto implements ProductoDescontable, Pro
         super(GeneradorID.generarIDBebida(), descripcion, cantidad, precioVenta, precioCompra, estaDisponible);
         this.esImportado = esImportado;
         this.esAlcoholica = esAlcoholica;
-        this.porcentajeDescuento = 0;
         this.fechaVencimiento = null;
         this.calorias = 0;
 
@@ -48,24 +44,8 @@ public class ProductoBebida extends Producto implements ProductoDescontable, Pro
                 " * ¿Es Importada?: " + esImportado +
                 " * ¿Es Alcohólica?: " + esAlcoholica +
                 " * Graduacion: " + graduacionAlcoholica + "%" +
-                " * Porcentaje de descuento: " + porcentajeDescuento + "%" +
                 " * Calorias: " + calorias +
                 " * Fecha de vencimiento: " + fechaVencimiento + "\n";
-    }
-
-    @Override
-    public void setPorcentajeDescuento(double porcentaje) {
-        this.porcentajeDescuento = porcentaje;
-    }
-
-    @Override
-    public double getPorcentajeDescuento() {
-        return this.porcentajeDescuento;
-    }
-
-    @Override
-    public BigDecimal getPrecioVentaConDescuento() {
-        return this.getPrecioVenta().multiply(BigDecimal.valueOf(1 - this.porcentajeDescuento));
     }
 
     @Override

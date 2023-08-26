@@ -1,10 +1,9 @@
 package modelos;
 
+import dto.SolicitudVenta;
+import enums.TipoAplicacion;
 import enums.TipoProducto;
-import excepciones.PorcentajeDescuentoNoValidoException;
-import excepciones.SaldoInsuficienteCajaException;
-import excepciones.StockMaximoException;
-import excepciones.TipoProductoNoContempladoException;
+import excepciones.*;
 import interfaces.ProductoComestible;
 import interfaces.ProductoDescontable;
 
@@ -40,6 +39,18 @@ public class Tienda {
 
     }
 
+    public void establecerFechaVencimientoProducto(String identificador, LocalDate date) {
+        ProductoComestible producto = (ProductoComestible) productos.get(identificador);
+        producto.setFechaVencimiento(date);
+        productos.put(identificador, (Producto) producto);
+    }
+
+    public void establecerCaloriasProducto(String identificador, int calorias) {
+        ProductoComestible productoComestible = (ProductoComestible) productos.get(identificador);
+        productoComestible.setCalorias(calorias);
+        productos.put(identificador, (Producto) productoComestible);
+    }
+
     public void agregarProducto(Producto producto) {
         /// Verificacion stock maximo de tienda
         if(this.maxStock <  this.obtenerStockActual() + producto.getCantidad()) {
@@ -63,24 +74,9 @@ public class Tienda {
         productos.put(producto.getIdentificador(), producto);
     }
 
-    public void establecerFechaVencimientoProducto(String identificador, LocalDate date) {
-       ProductoComestible producto = (ProductoComestible) productos.get(identificador);
-       producto.setFechaVencimiento(date);
-       productos.put(identificador, (Producto) producto);
-    }
-
-    public void establecerCaloriasProducto(String identificador, int calorias) {
-        ProductoComestible productoComestible = (ProductoComestible) productos.get(identificador);
-        productoComestible.setCalorias(calorias);
-        productos.put(identificador, (Producto) productoComestible);
-    }
-
     public void establecerDescuentoProducto(String identificador, double porcentajeDescuento) {
-
         /// Obtener el producto a actualizar
         ProductoDescontable productoDescontable = (ProductoDescontable) productos.get(identificador);
-
-        System.out.println(productoDescontable);
 
         /// Actualizar el descuento del producto
         if(productoDescontable instanceof ProductoBebida) {
@@ -94,7 +90,6 @@ public class Tienda {
             throw new TipoProductoNoContempladoException(productoDescontable.getClass().getSimpleName());
         }
 
-        System.out.println("TEST");
         /// Persistir el producto
         productos.put(identificador, (Producto) productoDescontable);
     }
@@ -109,8 +104,137 @@ public class Tienda {
         }
     }
 
-    public void realizarVenta(List<Producto> productosSolicitados) {
+    public void realizarVenta(List<SolicitudVenta> solicitudVentas) {
+        int maximaCantidadProductos = 3;
+        int maximaCantidadPorItem = 10;
 
+        /// Mapear dtos a productos
+        List<Producto> productosSolicitados = mapearItemsVenta(solicitudVentas);
+
+        /// Verificaciones previas a venta
+        productosSolicitados = verificacionesPreviasVenta(productosSolicitados, maximaCantidadProductos, maximaCantidadPorItem);
+
+        /// Remover productos de la venta
+        productosSolicitados = removerProductosVenta(productosSolicitados);
+
+        /// Verificar porcentajes de ganancias
+        verificarPorcentajeGanancias(productosSolicitados);
+
+        
+    }
+
+
+
+    private void verificarPorcentajeGanancias(List<Producto> productosSolicitados) {
+        for(Producto item : productosSolicitados) {
+            double porcentajeGanancia = calcularPorcentajeGanancia(item);
+
+            if(item instanceof ProductoComestible) {
+                if(porcentajeGanancia > 0.20) {
+                    throw new RuntimeException("Porcentaje de ganancia no valido");
+                }
+            } else if(item instanceof ProductoLimpieza) {
+                if((((ProductoLimpieza) item).getTipoAplicacion() == TipoAplicacion.ROPA) || (((ProductoLimpieza) item).getTipoAplicacion() == TipoAplicacion.MULTIUSO)) {
+                    if(porcentajeGanancia > 0.25) {
+                        throw new RuntimeException("Porcentaje de ganancia no valido");
+                    }
+                } else {
+                    if(porcentajeGanancia > 0.25 || porcentajeGanancia < 0.10) {
+                        throw new RuntimeException("Porcentaje de ganancia no valido");
+                    }
+                }
+            }
+        }
+    }
+
+    private double calcularPorcentajeGanancia(Producto producto) {
+        BigDecimal precioCompra = producto.getPrecioCompra();
+        BigDecimal precioVentaConDescuento = producto.getPrecioVentaConDescuento();
+        BigDecimal ganancia = precioVentaConDescuento.subtract(precioCompra);
+
+        return (ganancia.doubleValue() / precioCompra.doubleValue()) * 100;
+    }
+
+    private List<Producto> removerProductosVenta(List<Producto> productosSolicitados) {
+        /// Remover productos que no se encuentran disponibles o estan vencidos
+        Iterator<Producto> iterator = productosSolicitados.listIterator();
+        while (iterator.hasNext()) {
+            Producto item = iterator.next();
+
+            /// Verificar si el producto esta vencido
+            if(item instanceof ProductoComestible) {
+                if(((ProductoComestible) item).getFechaVencimiento().isBefore(LocalDate.now())) {
+                    /// Creo un aux para evitar errores de inconsistencia
+                    Producto aux = productos.get(item.getIdentificador());
+                    aux.setEstaDisponible(false);
+                    productos.put(aux.getIdentificador(), aux);
+                }
+            }
+
+            /// Verificar si el producto esta disponible
+            if (!item.isEstaDisponible()) {
+                System.out.println("El producto: " + item.getIdentificador() + ", descripcion: " + item.getDescripcion() + ", no se encuentra disponible.");
+                iterator.remove();
+            }
+        }
+
+        return productosSolicitados;
+    }
+
+    private List<Producto> verificacionesPreviasVenta(List<Producto> productosSolicitados, int maximoCantidadProductos, int maximaCantidadPorItem) {
+        boolean flagStock = false;
+
+        /// Verificar cantidad de productos solicitados
+        if(productosSolicitados.size() > maximoCantidadProductos) {
+            throw new MaximaCantidadProductosException(maximoCantidadProductos, productosSolicitados.size());
+        }
+
+        /// Verificaciones antes de realizar venta
+        for(Producto item : productosSolicitados) {
+            Producto producto = productos.get(item.getIdentificador());
+
+            /// Verificar cantidades no negativas
+            if(item.getCantidad() < 0) {
+                throw new RuntimeException("Cantidad no valida, valor negativo.");
+            }
+
+            /// Verificar cantidad por producto solicitado
+            if(item.getCantidad() > maximaCantidadPorItem) {
+                throw new MaximaCantidadPorItemException(maximaCantidadPorItem, item.getCantidad());
+            }
+
+            /// Actualizar valores de la venta a unidades disponibles
+            if(item.getCantidad() > producto.getCantidad()) {
+                item.setCantidad(producto.getCantidad());
+                flagStock = true;
+            }
+        }
+
+        /// Mostrar mensaje stock disponible menor al solicitado
+        if(flagStock) {
+            System.out.println("Hay productos con stock disponible menor al solicitado.");
+        }
+
+        return productosSolicitados;
+    }
+
+    /* Funcion auxiliar para modularizar codigo */
+    private List<Producto> mapearItemsVenta(List<SolicitudVenta> solicitudVentas) {
+        List<Producto> productosSolicitados = new ArrayList<>();
+
+        for(SolicitudVenta item : solicitudVentas) {
+            String identificador = item.getIdentificador();
+            /// Verificar identificador
+            if(identificador.length() > 6) {
+                throw new IdentificadorNoValidoException(identificador);
+            } else {
+                Producto aux = productos.get(identificador);
+                aux.setCantidad(item.getCantidad());
+                productosSolicitados.add(aux);
+            }
+        }
+
+        return productosSolicitados;
     }
 
     public String mostrarProductos() {

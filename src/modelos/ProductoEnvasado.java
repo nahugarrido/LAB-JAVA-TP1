@@ -1,7 +1,6 @@
 package modelos;
 
 import enums.TipoEnvase;
-import excepciones.PorcentajeDescuentoNoValidoException;
 import interfaces.ProductoComestible;
 import interfaces.ProductoDescontable;
 import utiles.GeneradorID;
@@ -12,7 +11,6 @@ import java.time.LocalDate;
 public class ProductoEnvasado extends Producto implements ProductoDescontable, ProductoComestible {
     private TipoEnvase tipoEnvase;
     private boolean esImportado;
-    private double porcentajeDescuento;
     private LocalDate fechaVencimiento;
     private int calorias;
 
@@ -20,7 +18,6 @@ public class ProductoEnvasado extends Producto implements ProductoDescontable, P
         super(GeneradorID.generarIDEnvasado(), descripcion, cantidad, precioCompra, precioVenta, estaDisponible);
         this.esImportado = esImportado;
         this.tipoEnvase = tipoEnvase;
-        this.porcentajeDescuento = 0;
         this.fechaVencimiento = null;
         this.calorias = 0;
     }
@@ -30,25 +27,8 @@ public class ProductoEnvasado extends Producto implements ProductoDescontable, P
         return super.toString() +
                 " * ¿Es Importado?: " + esImportado +
                 " * Tipo de envase: " + tipoEnvase.getMensaje() +
-                " * Porcentaje de descuento: " + porcentajeDescuento + "%" +
                 " * Calorias: " + calorias +
                 " * Fecha de vencimiento: " + fechaVencimiento + "\n";
-    }
-
-    @Override
-    public void setPorcentajeDescuento(double porcentaje) {
-        this.porcentajeDescuento = porcentaje;
-    }
-
-    @Override
-    public double getPorcentajeDescuento() {
-        return this.porcentajeDescuento;
-    }
-
-    @Override
-    public BigDecimal getPrecioVentaConDescuento() {
-        BigDecimal precioVentaConDescuento = this.getPrecioVenta().multiply(BigDecimal.valueOf(1 - this.porcentajeDescuento));
-        return precioVentaConDescuento;
     }
 
     @Override

@@ -26,9 +26,6 @@ public class Main {
             System.out.println("Opción 6 - Añadir fechas de caducidad y calorias (Inicialmente se les asignan valores por defecto null y 0)");
             System.out.println("Opción 7 - Actualizar descuentos de productos (Inicialmente el descuento de todos los productos es 0)");
             System.out.println("Opción 8 - Actualizar descuentos de productos (No cumple con condición descuento maximo)");
-            System.out.println("Opción X - Agregar Productos (No cumple con condicion precio de venta - Productos Comestibles) *** PENDIENTE ***");
-            System.out.println("Opción X - Agregar Productos (No cumple con condicion precio de venta - Productos de Limpieza (1)) *** PENDIENTE ***");
-            System.out.println("Opción X - Agregar Productos (No cumple con condicion precio de venta - Productos de Limpieza (2)) *** PENDIENTE ***");
             System.out.println("Opción X - Realizar venta exitosamente *** PENDIENTE ***");
             System.out.println("Opción X - Realizar venta con casos especiales *** PENDIENTE ***");
             System.out.println("Opción X - Obtener comestibles con descuento menor a 10% con API STREAMS *** PENDIENTE ***");
@@ -81,12 +78,12 @@ public class Main {
                         System.out.println("Fechas de vencimiento y calorias actualizadas con exito.");
                         break;
                     case "7":
-                        tienda.establecerDescuentoProducto("AB101", 0.1);
+                        tienda.establecerDescuentoProducto("AB101", 0.05);
                         tienda.establecerDescuentoProducto("AC101", 0.1);
-                        tienda.establecerDescuentoProducto("AC102", 0.1);
-                        tienda.establecerDescuentoProducto("AZ101", 0.1);
-                        tienda.establecerDescuentoProducto("AZ102", 0.1);
-                        tienda.establecerDescuentoProducto("AZ103", 0.1);
+                        tienda.establecerDescuentoProducto("AC102", 0.15);
+                        tienda.establecerDescuentoProducto("AZ101", 0.20);
+                        tienda.establecerDescuentoProducto("AZ102", 0.21);
+                        tienda.establecerDescuentoProducto("AZ103", 0.22);
                         System.out.println("Descuentos actualizados con exito.");
                         break;
                     case "8":

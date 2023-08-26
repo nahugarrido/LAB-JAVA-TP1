@@ -1,8 +1,8 @@
 package configuracion;
 
-/* Utilizo Singletone */
 public class Configuracion {
     private static Configuracion instancia = null;
+
     private int contadorBebida = 100;
     private int contadorEnvasado = 100;
     private int contadorLimpieza = 100;
