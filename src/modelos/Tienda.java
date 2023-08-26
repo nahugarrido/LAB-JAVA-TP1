@@ -2,7 +2,6 @@ package modelos;
 
 import dto.SolicitudVenta;
 import enums.TipoAplicacion;
-import enums.TipoProducto;
 import excepciones.*;
 import interfaces.ProductoComestible;
 import interfaces.ProductoDescontable;
@@ -22,12 +21,14 @@ public class Tienda {
     private String nombre;
     private int maxStock;
     private BigDecimal saldoCaja;
+    private List<Venta> ventas;
     private TreeMap<String, Producto> productos;
 
     public Tienda(String nombre, int maxStock, BigDecimal saldoCaja) {
         this.nombre = nombre;
         this.maxStock = maxStock;
         this.saldoCaja = saldoCaja;
+        this.ventas = new ArrayList<>();
         this.productos = new TreeMap<>();
     }
 
@@ -111,7 +112,7 @@ public class Tienda {
         /// Mapear dtos a productos
         List<Producto> productosSolicitados = mapearItemsVenta(solicitudVentas);
 
-        /// Verificaciones previas a venta
+        /// Verificaciones previas a venta y modificacion en cantidades
         productosSolicitados = verificacionesPreviasVenta(productosSolicitados, maximaCantidadProductos, maximaCantidadPorItem);
 
         /// Remover productos de la venta
@@ -120,7 +121,87 @@ public class Tienda {
         /// Verificar porcentajes de ganancias
         verificarPorcentajeGanancias(productosSolicitados);
 
-        
+        /// Realizar venta
+        /// monto antes de aplicar ningun descuento
+        BigDecimal montoTotalVenta = new BigDecimal(0);
+        /// monto despues de aplicar descuentos
+        BigDecimal montoSubTotalVenta = new BigDecimal(0);
+        /// impuestos en la venta
+        BigDecimal impuestosVenta = new BigDecimal(0);
+        /// monto abonado
+        BigDecimal montoAbonadoTotal = new BigDecimal(0);
+
+        for(Producto item : productosSolicitados) {
+            BigDecimal subTotalItem;
+
+            /// Verificacion de descuentos aplicables (Cuando se establecen los descuentos se verifica que respeten las restricciones)
+            if(item.getPrecioVentaConDescuento().compareTo(item.getPrecioCompra()) < 0) {
+                subTotalItem = item.getPrecioVenta().multiply(BigDecimal.valueOf(item.getCantidad()));
+                System.out.println("El descuento registrado para el producto " + item.getIdentificador() + " no pudo ser aplicado");
+            } else {
+                subTotalItem = item.getPrecioVentaConDescuento().multiply(BigDecimal.valueOf(item.getCantidad()));
+            }
+
+            /// Verificar si el producto es importado y actualizar monto
+            if(item instanceof ProductoBebida) {
+                ProductoBebida aux = (ProductoBebida) item;
+                if(aux.isEsImportado()) {
+                    impuestosVenta = impuestosVenta.add(subTotalItem.multiply(BigDecimal.valueOf(0.1)));
+                }
+            }
+
+            /// Verificar si el producto es importado y actualizar monto
+            if(item instanceof ProductoEnvasado) {
+                ProductoEnvasado aux = (ProductoEnvasado) item;
+                if(aux.isEsImportado()) {
+                    impuestosVenta = impuestosVenta.add(subTotalItem.multiply(BigDecimal.valueOf(0.1)));
+                }
+            }
+
+            /// Actualizar monto total venta
+            montoTotalVenta = montoTotalVenta.add(item.getPrecioVenta().multiply(BigDecimal.valueOf(item.getCantidad())));
+
+            /// Actualizar monto subtotal venta
+            montoSubTotalVenta = montoSubTotalVenta.add(subTotalItem);
+        }
+
+        /// modificar stock de productos en tienda
+        for(Producto productoSolicitado : productosSolicitados) {
+            String identificador = productoSolicitado.getIdentificador();
+
+            Producto aux = productos.get(identificador);
+
+            aux.setCantidad( aux.getCantidad() - productoSolicitado.getCantidad());
+
+            if(aux.getCantidad() <= 0) {
+                aux.setEstaDisponible(false);
+            }
+
+            productos.put(aux.getIdentificador(), aux);
+        }
+
+        /// actualizar saldo de tienda
+        this.setSaldoCaja(this.getSaldo().add(montoSubTotalVenta));
+
+        /// Generar venta
+        montoAbonadoTotal = montoSubTotalVenta.add(impuestosVenta);
+        Venta ventaNueva = new Venta(productosSolicitados, montoTotalVenta, montoSubTotalVenta, impuestosVenta, montoAbonadoTotal);
+
+        /// Agregar venta a la tienda
+        ventas.add(ventaNueva);
+
+        /// imprimir venta
+        System.out.println(ventaNueva.mostrarVenta());
+
+    }
+
+    public String mostrarVentas() {
+        String texto = "";
+        for(Venta item : ventas) {
+            texto += item.mostrarVenta();
+        }
+
+        return texto;
     }
 
 
@@ -171,7 +252,7 @@ public class Tienda {
                 }
             }
 
-            /// Verificar si el producto esta disponible
+            /// Verificar si el producto no esta disponible
             if (!item.isEstaDisponible()) {
                 System.out.println("El producto: " + item.getIdentificador() + ", descripcion: " + item.getDescripcion() + ", no se encuentra disponible.");
                 iterator.remove();
