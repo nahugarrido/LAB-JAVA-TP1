@@ -9,6 +9,7 @@ import interfaces.ProductoDescontable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Tienda {
     private static final double PORCENTAJE_GANANCIA_COMESTIBLE = 0.20;
@@ -296,6 +297,15 @@ public class Tienda {
         }
 
         return productosSolicitados;
+    }
+
+    public String obtenerComestiblesConMenorDescuento(double porcentaje_descuento) {
+        return productos.entrySet().stream()
+                .map(Map.Entry::getValue)
+                .filter(producto -> producto instanceof ProductoComestible)
+                .filter(producto -> producto.getPorcentajeDescuento() < porcentaje_descuento)
+                .map(Producto::getDescripcion)
+                .collect(Collectors.joining(","));
     }
 
     public String mostrarProductos() {

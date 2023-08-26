@@ -16,8 +16,9 @@ public class Main {
         Scanner scan = new Scanner(System.in);
         boolean flag = true;
         String opcion = "";
-        
+
         System.out.println("ACLARACION IMPORTANTE: El orden para testear las ventas es (3,6,7,9) y (3,6,7,10)");
+        System.out.println("ACLARACION IMPORTANTE: El orden para testear el punto 11 es (3,7,11)");
 
         do {
             System.out.println("******************************************************");
@@ -33,7 +34,7 @@ public class Main {
             System.out.println("Opción 8 - Actualizar descuentos de productos (No cumple con condición descuento maximo)");
             System.out.println("Opción 9 - Realizar venta exitosamente");
             System.out.println("Opción 10 - Realizar venta (ganancia maxima superada)");
-            System.out.println("Opción X - Obtener comestibles con descuento menor a 10% con API STREAMS *** PENDIENTE ***");
+            System.out.println("Opción 11 - Obtener comestibles con descuento menor a 10% con API STREAMS");
             System.out.println("Opción X - Obtener productos generando ganancias menores a 10%  con API STREAMS *** PENDIENTE ***");
 
             System.out.println("Opción X - Salir");
@@ -111,6 +112,9 @@ public class Main {
                         SolicitudVenta item4 = new SolicitudVenta("AC102", 1); /// porcentaje de ganancia no valido
                         solicitud2.add(item4);
                         tienda.realizarVenta(solicitud2);
+                        break;
+                    case "11":
+                        System.out.println(tienda.obtenerComestiblesConMenorDescuento(0.10));
                         break;
 
                     case "X":
