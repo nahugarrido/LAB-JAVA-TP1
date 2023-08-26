@@ -64,8 +64,6 @@ public class Tienda {
             throw new SaldoInsuficienteCajaException(this.getSaldo(), montoCompra);
         }
 
-        /// Actualizar Stock
-        this.setMaxStock(this.getMaxStock() + producto.getCantidad());
         /// Actualizar Saldo
         this.setSaldoCaja(this.getSaldo().subtract(montoCompra));
 
