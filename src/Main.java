@@ -19,7 +19,7 @@ public class Main {
 
         System.out.println("ACLARACION IMPORTANTE: El orden para testear las ventas es (3,6,7,9) y (3,6,7,10)");
         System.out.println("ACLARACION IMPORTANTE: El orden para testear el punto 11 es (3,7,11)");
-
+        
         do {
             System.out.println("******************************************************");
             System.out.println("Navegación - " + tienda.getNombre());
@@ -35,7 +35,8 @@ public class Main {
             System.out.println("Opción 9 - Realizar venta exitosamente");
             System.out.println("Opción 10 - Realizar venta (ganancia maxima superada)");
             System.out.println("Opción 11 - Obtener comestibles con descuento menor a 10% con API STREAMS");
-            System.out.println("Opción X - Obtener productos generando ganancias menores a 10%  con API STREAMS *** PENDIENTE ***");
+            System.out.println("Opción 12 - Obtener productos generando ganancias menores a 15%  con API STREAMS");
+            System.out.println("Opción 13 - Obtener productos generando ganancias menores a 50%  con API STREAMS");
 
             System.out.println("Opción X - Salir");
             System.out.println("******************************************************");
@@ -116,7 +117,12 @@ public class Main {
                     case "11":
                         System.out.println(tienda.obtenerComestiblesConMenorDescuento(0.10));
                         break;
-
+                    case "12":
+                        System.out.println(tienda.listarProductosConUtilidadesInferiores(0.15));
+                        break;
+                    case "13":
+                        System.out.println(tienda.listarProductosConUtilidadesInferiores(0.50));
+                        break;
                     case "X":
                         flag = false;
                         break;

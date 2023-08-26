@@ -308,6 +308,15 @@ public class Tienda {
                 .collect(Collectors.joining(","));
     }
 
+    public String listarProductosConUtilidadesInferiores(double porcentaje_utilidad) {
+        return productos.entrySet().stream()
+                .map(Map.Entry::getValue)
+                .filter(producto -> calcularPorcentajeGanancia(producto) < (porcentaje_utilidad*100))
+                .map(producto -> "IDENTIFICADOR: " + producto.getIdentificador() + ", DESCRIPCION: " + producto.getDescripcion() + ", CANTIDAD: " + producto.getCantidad())
+                .collect(Collectors.joining("\n"));
+    }
+
+
     public String mostrarProductos() {
         StringBuilder texto = new StringBuilder();
 
